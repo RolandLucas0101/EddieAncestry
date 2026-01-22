@@ -1,4 +1,6 @@
 import streamlit as st
+import base64
+from datetime import datetime
 
 # ==================== PAGE CONFIGURATION ====================
 st.set_page_config(
@@ -11,10 +13,8 @@ st.set_page_config(
 # ==================== CUSTOM CSS ====================
 st.markdown("""
 <style>
-    /* Import fonts */
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;500&display=swap');
     
-    /* Main headers */
     .main-header {
         font-family: 'Cinzel', serif;
         font-size: 3rem;
@@ -22,7 +22,6 @@ st.markdown("""
         text-align: center;
         color: #1a472a;
         margin-bottom: 0.5rem;
-        padding-top: 1rem;
     }
     
     .sub-header {
@@ -34,7 +33,6 @@ st.markdown("""
         font-style: italic;
     }
     
-    /* Section headers */
     .section-header {
         font-family: 'Cinzel', serif;
         font-size: 1.8rem;
@@ -45,24 +43,6 @@ st.markdown("""
         margin-bottom: 1rem;
     }
     
-    /* Timeline styling */
-    .timeline-year {
-        font-family: 'Cinzel', serif;
-        font-weight: 700;
-        color: #c9a66b;
-        font-size: 1.5rem;
-        margin-bottom: 0.2rem;
-    }
-    
-    .timeline-event {
-        font-family: 'Lora', serif;
-        font-size: 1.1rem;
-        line-height: 1.5;
-        color: #333;
-        margin-bottom: 1.2rem;
-    }
-    
-    /* Gift message styling */
     .gift-message {
         background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
         border-left: 5px solid #c9a66b;
@@ -74,163 +54,202 @@ st.markdown("""
         line-height: 1.6;
     }
     
-    /* Image container */
-    .image-container {
+    .image-placeholder {
+        background: linear-gradient(135deg, #e8dfc8 0%, #d4c9a6 100%);
+        border: 2px dashed #c9a66b;
         border-radius: 8px;
-        overflow: hidden;
-        margin: 1.5rem 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    .image-caption {
-        font-family: 'Lora', serif;
-        font-size: 0.9rem;
-        color: #666;
+        padding: 2rem;
         text-align: center;
-        padding: 0.5rem;
-        background: #f8f9fa;
-    }
-    
-    /* Sidebar styling */
-    .sidebar-section {
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-    }
-    
-    /* Footer */
-    .footer {
-        text-align: center;
+        margin: 1.5rem 0;
+        font-family: 'Lora', serif;
         color: #666;
+    }
+    
+    .download-btn {
+        background: linear-gradient(to right, #1a472a, #2d5016);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
         font-family: 'Lora', serif;
-        font-size: 0.9rem;
-        margin-top: 3rem;
-        padding-top: 1rem;
-        border-top: 1px solid #eee;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-block;
+        text-decoration: none;
     }
     
-    /* Family tree styling */
-    .family-tree {
-        font-family: 'Courier New', monospace;
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 8px;
-        border-left: 4px solid #c9a76b;
-        margin: 1.5rem 0;
-        white-space: pre;
-        overflow-x: auto;
-    }
-    
-    /* Quote styling */
-    .quote-box {
-        font-family: 'Lora', serif;
-        font-style: italic;
-        font-size: 1.1rem;
-        color: #555;
-        border-left: 4px solid #c9a76b;
-        padding-left: 1.5rem;
-        margin: 1.5rem 0;
-    }
-    
-    /* Timeline styling */
-    .timeline-container {
-        position: relative;
-        padding-left: 2rem;
-        margin: 2rem 0;
-    }
-    
-    .timeline-item {
-        position: relative;
-        margin-bottom: 2rem;
-        padding-left: 1.5rem;
-    }
-    
-    .timeline-dot {
-        position: absolute;
-        left: -0.5rem;
-        top: 0.3rem;
-        width: 1rem;
-        height: 1rem;
-        background: #c9a76b;
-        border-radius: 50%;
-    }
-    
-    .timeline-line {
-        position: absolute;
-        left: 0;
-        top: 1.3rem;
-        bottom: -2rem;
-        width: 2px;
-        background: #e0e0e0;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .main-header {
-            font-size: 2rem;
-        }
-        
-        .section-header {
-            font-size: 1.5rem;
-        }
+    .download-btn:hover {
+        background: linear-gradient(to right, #2d5016, #1a472a);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== IMAGE URLS ====================
-# Direct image URLs that will work with st.image()
-HISTORICAL_IMAGES = {
-    "irish_immigrants": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Irish_immigrants_boarding_a_ship_at_Cork_%281851%29.jpg/1280px-Irish_immigrants_boarding_a_ship_at_Cork_%281851%29.jpg",
-    "ellis_island": "https://upload.wikimedia.org/wikipedia/commons/5/55/Ellis_island_1902.jpg",
-    "1940s_family": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/American_family_1940s.jpg/1280px-American_family_1940s.jpg",
-    "bronx_street": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Bronx_Street_Scene_1920s.jpg/1280px-Bronx_Street_Scene_1920s.jpg",
-    "truck_1950s": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/1950s_truck_delivery.jpg/1280px-1950s_truck_delivery.jpg"
-}
-
-# ==================== UTILITY FUNCTIONS ====================
-def display_historical_image(image_key, caption):
-    """Display historical image directly from URL"""
-    try:
-        if image_key in HISTORICAL_IMAGES:
-            st.image(
-                HISTORICAL_IMAGES[image_key],
-                caption=caption,
-                width="stretch"  # Fixed: Replaced use_column_width with width parameter
-            )
-        else:
-            st.warning(f"Image '{image_key}' not found in collection.")
-    except Exception as e:
-        st.info(f"*Historical image: {caption}*")
-        st.caption(f"(Image temporarily unavailable)")
-
-def display_family_tree():
-    """Display the family tree in a formatted way"""
-    tree_text = """
+# ==================== PDF GENERATION FUNCTION ====================
+def generate_pdf_content():
+    """Generate HTML content for PDF conversion"""
+    today = datetime.now().strftime("%B %d, %Y")
+    
+    content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>The Burns Family Story - Genealogical Report</title>
+        <style>
+            body {{ font-family: 'Arial', sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }}
+            .header {{ text-align: center; border-bottom: 3px solid #1a472a; padding-bottom: 20px; margin-bottom: 30px; }}
+            .main-title {{ color: #1a472a; font-size: 28px; margin-bottom: 10px; }}
+            .subtitle {{ color: #2d5016; font-size: 18px; font-style: italic; }}
+            .section {{ margin-bottom: 25px; }}
+            .section-title {{ color: #1a472a; border-bottom: 2px solid #c9a66b; padding-bottom: 5px; margin-bottom: 15px; font-size: 22px; }}
+            .evidence-box {{ background: #f9f3e9; border-left: 4px solid #c9a66b; padding: 15px; margin: 15px 0; }}
+            .timeline-year {{ font-weight: bold; color: #c9a66b; }}
+            .footer {{ margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 12px; }}
+            .image-caption {{ font-style: italic; color: #666; text-align: center; margin: 10px 0; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1 class="main-title">A Journey Home: The Burns Family Story</h1>
+            <p class="subtitle">A Genealogical Gift for Eddie Byrnes</p>
+            <p><em>Presented on {today}</em></p>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Core Discovery</h2>
+            <div class="evidence-box">
+                <strong>Edward J. Burns (1936-2004) is your biological father.</strong><br><br>
+                <strong>Key Evidence:</strong><br>
+                • Married your mother, Virginia Gonzalez, in <strong>1957</strong><br>
+                • Lived with you as a family in <strong>Brooklyn & Manhattan (1958-1960)</strong><br>
+                • Named you as his son in his <strong>2004 obituary</strong><br>
+                • Timeline and geography align perfectly<br><br>
+                <strong>Confidence Level: 95%+</strong>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Family Timeline</h2>
+            <p><span class="timeline-year">1936</span> - Edward J. Burns born January 4 in Brooklyn, NY</p>
+            <p><span class="timeline-year">1940</span> - Living at 1057 Fox Street, Bronx with parents James & Catherine</p>
+            <p><span class="timeline-year">1950</span> - Family upheaval: Edward (14) in Los Angeles; Catherine widowed in Bronx</p>
+            <p><span class="timeline-year">1957</span> - Marries Virginia A. Gonzalez (November 16) in NYC</p>
+            <p><span class="timeline-year">1958</span> - Eddie Byrnes born January 27 in Brooklyn</p>
+            <p><span class="timeline-year">1959-1960</span> - Family moves to Amsterdam Avenue, Manhattan</p>
+            <p><span class="timeline-year">1960s-1990s</span> - Truck driver for Consolidated Freightways, 30-year career</p>
+            <p><span class="timeline-year">2004</span> - Passes away May 12 in Belleville, NJ; Obituary names "Edward 'Eddie' Byrnes" as his son</p>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Family Tree</h2>
+            <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; font-family: monospace;">
     James BURNS (Ireland) + Catherine (Ireland)
             |
             ├── Edward J. BURNS (1936-2004) = Virginia GONZALEZ
             │               │
-            │               └── **Edward "Eddie" BYRNES (You)**
+            │               └── <strong>Edward "Eddie" BYRNES (You)</strong>
             │
             ├── John Burns (Bronx)
             ├── James Burns (Florida)
             ├── Michael Burns (Pennsylvania)
             └── Catherine Ryan (Staten Island)
-    """
-    st.markdown(f'<div class="family-tree">{tree_text}</div>', unsafe_allow_html=True)
-
-def create_timeline_item(year, event):
-    """Create a timeline item with custom styling"""
-    st.markdown(f"""
-    <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-line"></div>
-        <div style="font-family: 'Cinzel', serif; font-weight: 700; color: #c9a76b; font-size: 1.5rem; margin-bottom: 0.5rem;">
-            {year}
+            </pre>
         </div>
-        <div style="font-family: 'Lora', serif; font-size: 1.1rem; line-height: 1.5; color: #333;">
-            {event}
+        
+        <div class="section">
+            <h2 class="section-title">Documented Evidence</h2>
+            <h3>U.S. Census Records</h3>
+            <p><strong>1940 Census (1057 Fox St, Bronx)</strong><br>
+            • Edward Burns, age 4<br>
+            • Parents: James & Catherine Burns (both born Ireland)<br>
+            • James: Machinist in auto plant</p>
+            
+            <p><strong>1950 Census (Multiple Locations)</strong><br>
+            • Edward Burns, age 14, Los Angeles, CA<br>
+            • Living with Sara Burns & siblings<br>
+            • Catherine Burns (widowed), age 50, 1075 Tiffany St, Bronx</p>
+            
+            <h3>Vital Records</h3>
+            <p><strong>Social Security Death Index</strong><br>
+            • Edward J. Burns: Born Jan 4, 1936 - Died May 12, 2004</p>
+            
+            <p><strong>Marriage Index</strong><br>
+            • Edward J. Burns to Virginia A. Gonzalez: Nov 16, 1957, NYC</p>
+            
+            <h3>Next Steps for Verification</h3>
+            <ol>
+                <li>Order Eddie's birth certificate (NYC Vital Records)</li>
+                <li>Order marriage certificate (Edward & Virginia, 1957)</li>
+                <li>DNA testing (AncestryDNA, 23andMe)</li>
+                <li>Contact Greco Funeral Home (Lyndhurst, NJ)</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Historical Context</h2>
+            <p><strong>Irish Roots:</strong> James (born ~1896) and Catherine (born ~1900) Burns lived through the 
+            1916 Easter Rising, Irish War of Independence (1919-1921), and Civil War (1922-1923). 
+            They emigrated to America in the mid-to-late 1920s.</p>
+            
+            <p><strong>Key Locations:</strong><br>
+            • 1057 Fox St, Bronx (1940)<br>
+            • 1075 Tiffany St, Bronx (1950s)<br>
+            • Brooklyn & Manhattan (1958-1960)<br>
+            • Belleville, NJ (2004)</p>
+            
+            <p class="image-caption">[Historical images: Irish immigrants boarding ship, Ellis Island, 1940s American family]</p>
+        </div>
+        
+        <div class="section">
+            <div class="evidence-box">
+                <h3>Birthday Message</h3>
+                <p>This presentation represents months of research through historical archives, 
+                census records, and public documents—all to answer the question of your paternal lineage.</p>
+                
+                <p><em>"My grandparents survived the birth of a nation and the Great Depression. 
+                My father survived a childhood fracture and crossed a continent twice. 
+                Through it all, they held onto family. I am the living proof of that hold."</em></p>
+                
+                <p><strong>Sláinte agus beannachtaí</strong><br>
+                (Health and blessings)</p>
+                
+                <p style="text-align: right;">With all our love,<br>Your Sibling</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Sources: 1940 & 1950 U.S. Census • NYC Marriage Index • Social Security Death Index • Newark Star-Ledger Obituary</p>
+            <p>Presented as a birthday gift • Generated on {today}</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return content
+
+def create_download_link(content, filename="burns_family_story.html"):
+    """Create a downloadable HTML file"""
+    b64 = base64.b64encode(content.encode()).decode()
+    href = f'data:text/html;base64,{b64}'
+    return href
+
+# ==================== IMAGE HANDLING ====================
+def display_historical_placeholder(image_key, caption):
+    """Display a styled placeholder for historical images"""
+    st.markdown(f"""
+    <div class="image-placeholder">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏞️</div>
+        <div style="font-family: 'Cinzel', serif; font-size: 1.1rem; color: #1a472a; margin-bottom: 0.5rem;">
+            Historical Image
+        </div>
+        <div style="font-family: 'Lora', serif; color: #666;">
+            {caption}
+        </div>
+        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #888;">
+            (Image from historical archives)
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -247,6 +266,16 @@ with st.sidebar:
          "📅 Family Timeline", "🔍 Evidence", "💝 Birthday Message"],
         label_visibility="collapsed"
     )
+    
+    st.markdown("---")
+    
+    # PDF Download Button
+    st.markdown("### 📥 Download Report")
+    if st.button("Download Full Report (HTML)", key="download_pdf"):
+        pdf_content = generate_pdf_content()
+        download_link = create_download_link(pdf_content, "burns_family_story.html")
+        st.markdown(f'<a href="{download_link}" download="burns_family_story.html" class="download-btn">⬇️ Download Now</a>', unsafe_allow_html=True)
+        st.info("The report has been generated as an HTML file. You can print it directly from your browser or convert it to PDF.")
     
     st.markdown("---")
     
@@ -316,15 +345,15 @@ if page == "🎁 Introduction":
         """)
     
     with col2:
-        # Family tree symbol and image
-        st.markdown("""
-        <div style="text-align: center; padding: 1rem;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">🌳</div>
-            <div style="font-family: 'Cinzel', serif; font-size: 1.2rem;">Family Heritage</div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Historical image placeholder
+        display_historical_placeholder("1940s_family", "An American family, 1940s")
         
-        display_historical_image("1940s_family", "An American family, 1940s")
+        # Quick download option
+        st.markdown("### Quick Download")
+        if st.button("Get Summary PDF", key="intro_download"):
+            summary_content = generate_pdf_content()
+            download_link = create_download_link(summary_content, "burns_family_summary.html")
+            st.markdown(f'<a href="{download_link}" download="burns_family_summary.html" class="download-btn">📄 Download Summary</a>', unsafe_allow_html=True)
 
 # ==================== PAGE 2: IRISH ROOTS ====================
 elif page == "🇮🇪 Irish Roots":
@@ -356,7 +385,7 @@ elif page == "🇮🇪 Irish Roots":
         • Emigration wave: Over 220,000 left between 1921-1930
         """)
         
-        st.markdown('<div class="quote-box">', unsafe_allow_html=True)
+        st.markdown('<div class="gift-message">', unsafe_allow_html=True)
         st.markdown("""
         "They didn't leave because they didn't love Ireland. 
         They left because they loved the idea of a future enough 
@@ -365,8 +394,8 @@ elif page == "🇮🇪 Irish Roots":
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        # Historical image
-        display_historical_image("irish_immigrants", "Irish immigrants boarding a ship at Cork, c. 1851")
+        # Historical image placeholder
+        display_historical_placeholder("irish_immigrants", "Irish immigrants boarding a ship at Cork, c. 1851")
         
         st.markdown('<div class="section-header">Life in Ireland</div>', unsafe_allow_html=True)
         st.markdown("""
@@ -381,8 +410,8 @@ elif page == "🛳️ Journey to America":
     st.markdown('<div class="main-header">Journey to America</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">The Leap Across the Atlantic (c. 1924-1929)</div>', unsafe_allow_html=True)
     
-    # Ellis Island image
-    display_historical_image("ellis_island", "Ellis Island, New York, c. 1902")
+    # Historical image placeholder
+    display_historical_placeholder("ellis_island", "Ellis Island, New York, c. 1902")
     
     st.markdown("""
     Sometime in the mid-to-late 1920s, James and Catherine boarded a crowded transatlantic 
@@ -422,37 +451,46 @@ elif page == "🛳️ Journey to America":
         """)
     
     with col2:
-        display_historical_image("bronx_street", "Bronx street scene, 1920s")
+        display_historical_placeholder("bronx_street", "Bronx street scene, 1920s")
 
 # ==================== PAGE 4: FAMILY TIMELINE ====================
 elif page == "📅 Family Timeline":
     st.markdown('<div class="main-header">Family Timeline</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">The Life of Edward J. Burns & Family</div>', unsafe_allow_html=True)
     
-    # Timeline with custom styling
-    st.markdown('<div class="timeline-container">', unsafe_allow_html=True)
-    
-    timeline_items = [
+    # Timeline
+    timeline_data = [
         {"year": "1936", "event": "Edward J. Burns born January 4 in Brooklyn, NY"},
         {"year": "1940", "event": "Living at 1057 Fox Street, Bronx with parents James & Catherine"},
         {"year": "1950", "event": "Family upheaval: Edward (14) in Los Angeles; Catherine widowed in Bronx"},
         {"year": "1957", "event": "Marries Virginia A. Gonzalez (November 16) in NYC"},
-        {"year": "1958", "event": "• Eddie Byrnes born January 27 in Brooklyn<br>• Family lives on South Portland Street, Brooklyn"},
+        {"year": "1958", "event": "• Eddie Byrnes born January 27 in Brooklyn\n• Family lives on South Portland Street, Brooklyn"},
         {"year": "1959-1960", "event": "Family moves to Amsterdam Avenue, Manhattan"},
         {"year": "1960s-1990s", "event": "Truck driver for Consolidated Freightways, 30-year career"},
-        {"year": "2004", "event": "• Passes away May 12 in Belleville, NJ<br>• Obituary names 'Edward \"Eddie\" Byrnes' as his son"}
+        {"year": "2004", "event": "• Passes away May 12 in Belleville, NJ\n• Obituary names 'Edward \"Eddie\" Byrnes' as his son"}
     ]
     
-    for item in timeline_items:
-        create_timeline_item(item["year"], item["event"])
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+    for item in timeline_data:
+        st.markdown(f"**{item['year']}**")
+        st.markdown(f"{item['event']}")
+        st.markdown("---")
     
     st.markdown('<div class="section-header">Your Burns Family Tree</div>', unsafe_allow_html=True)
     
-    display_family_tree()
+    st.code("""
+    James BURNS (Ireland) + Catherine (Ireland)
+            |
+            ├── Edward J. BURNS (1936-2004) = Virginia GONZALEZ
+            │               │
+            │               └── Edward "Eddie" BYRNES (You)
+            │
+            ├── John Burns (Bronx)
+            ├── James Burns (Florida)
+            ├── Michael Burns (Pennsylvania)
+            └── Catherine Ryan (Staten Island)
+    """, language="text")
     
-    display_historical_image("truck_1950s", "1950s truck delivery - similar to Edward's work")
+    display_historical_placeholder("truck_1950s", "1950s truck delivery - similar to Edward's work")
 
 # ==================== PAGE 5: EVIDENCE ====================
 elif page == "🔍 Evidence":
@@ -525,12 +563,14 @@ elif page == "🔍 Evidence":
            - Ask who provided obituary details
         """)
         
-        st.markdown('<div class="gift-message">', unsafe_allow_html=True)
-        st.markdown("""
-        **Note:** This presentation provides strong circumstantial evidence. 
-        The steps above would provide legal and biological confirmation.
-        """)
-        st.markdown('</div>', unsafe_allow_html=True)
+        # Download button in evidence section
+        st.markdown("---")
+        st.markdown("### Download Full Report")
+        if st.button("Generate Complete Report", key="evidence_download"):
+            pdf_content = generate_pdf_content()
+            download_link = create_download_link(pdf_content, "burns_family_complete_report.html")
+            st.markdown(f'<a href="{download_link}" download="burns_family_complete_report.html" class="download-btn">📑 Download Complete Report</a>', unsafe_allow_html=True)
+            st.success("Report generated successfully! Click the button above to download.")
 
 # ==================== PAGE 6: BIRTHDAY MESSAGE ====================
 else:  # Birthday Message
@@ -555,7 +595,7 @@ else:  # Birthday Message
         """)
         
         st.markdown("""
-        <div class="quote-box">
+        <div style="border-left: 4px solid #c9a66b; padding-left: 1.5rem; margin: 1.5rem 0; font-style: italic;">
         "My grandparents survived the birth of a nation and the Great Depression. 
         My father survived a childhood fracture and crossed a continent twice. 
         Through it all, they held onto family. I am the living proof of that hold."
@@ -579,8 +619,15 @@ else:  # Birthday Message
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        # Historical family image
-        display_historical_image("1940s_family", "An American family, 1940s")
+        # Historical family image placeholder
+        display_historical_placeholder("1940s_family", "An American family, 1940s")
+        
+        # Final download option
+        st.markdown('<div class="section-header">Preserve This Story</div>', unsafe_allow_html=True)
+        if st.button("Download Keepsake Report", key="final_download"):
+            pdf_content = generate_pdf_content()
+            download_link = create_download_link(pdf_content, "burns_family_keepsake.html")
+            st.markdown(f'<a href="{download_link}" download="burns_family_keepsake.html" class="download-btn">💝 Download Keepsake</a>', unsafe_allow_html=True)
         
         st.markdown("""
         <div style="text-align: center; margin-top: 2rem; padding: 1rem; background: #f9f3e9; border-radius: 8px;">
@@ -593,13 +640,28 @@ else:  # Birthday Message
         """, unsafe_allow_html=True)
 
 # ==================== FOOTER ====================
-st.markdown('<div class="footer">', unsafe_allow_html=True)
-st.markdown("""
-**Sources:** 1940 & 1950 U.S. Census • NYC Marriage Index • Social Security Death Index • Newark Star-Ledger Obituary  
-**Presented as a birthday gift** • Created with Streamlit • Historical images from Wikimedia Commons
-""")
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("---")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.markdown("**Sources**")
+    st.markdown("• 1940 & 1950 U.S. Census")
+    st.markdown("• NYC Marriage Index")
+with col2:
+    st.markdown("**Research Methods**")
+    st.markdown("• Genealogical research")
+    st.markdown("• Historical context")
+with col3:
+    st.markdown("**Presented**")
+    st.markdown(f"• {datetime.now().strftime('%B %d, %Y')}")
+    st.markdown("• A birthday gift")
 
-# ==================== SESSION STATE INITIALIZATION ====================
+st.markdown(
+    "<div style='text-align: center; color: #666; font-size: 0.9rem; margin-top: 2rem;'>"
+    "This digital presentation was created with Streamlit"
+    "</div>", 
+    unsafe_allow_html=True
+)
+
+# ==================== SESSION STATE ====================
 if 'initialized' not in st.session_state:
     st.session_state.initialized = True
