@@ -378,7 +378,8 @@ PODCAST_DATA = {
         "The significance of the 2004 obituary",
         "What this discovery means for family identity"
     ],
-    "placeholder_note": "Podcast is hosted on Google Drive. Use the download button if the audio player doesn't work."
+    "placeholder_note": "Note: The NotebookLM audio requires Google authentication. To listen, please visit the NotebookLM link provided below.",
+    "notebooklm_link": "https://notebooklm.google.com/notebook/a541026a-2fd6-4754-b63b-50cd798df7a1?artifactId=938ac9ad-a9b6-41be-ab36-3a8fe29dd84f"
 }
 
 # ==================== MEDIA SEARCH DATA ====================
@@ -513,7 +514,7 @@ CENSUS_1950_SOURCE = [
 
 # ==================== UTILITY FUNCTIONS ====================
 def display_podcast_section():
-    """Display the podcast/audio section with Google Drive link"""
+    """Display the podcast/audio section"""
     st.markdown(f"""
     <div class="audio-section">
         <div class="audio-title">🔊 {PODCAST_DATA["title"]}</div>
@@ -525,59 +526,65 @@ def display_podcast_section():
     
     st.markdown("### 🎧 Listen to the Discovery Podcast")
     
-    # Convert Google Drive view link to direct download link
-    google_drive_id = "1NSqCR-FqZFJOQEpgBFLNzP0yvQqjl4uV"
-    direct_audio_url = f"https://drive.google.com/uc?export=download&id={google_drive_id}"
-    
-    # Try to display audio
+    # NotebookLM Link (Not embeddable due to authentication)
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
+    <div style="background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
                 padding: 2rem;
                 border-radius: 12px;
                 margin: 1.5rem 0;
-                text-align: center;
-                border-left: 5px solid #c9a66b;">
-        <h3 style="color: #1a472a; font-family: 'Cinzel', serif; margin-bottom: 1rem;">🎙️ Podcast Ready!</h3>
-        <p style="font-family: 'Lora', serif; margin-bottom: 1.5rem;">
-            Your podcast has been uploaded. Click play to listen to the audio documentary.
+                text-align: center;">
+        <h3 style="color: white; font-family: 'Cinzel', serif; margin-bottom: 1rem;">📘 Access the NotebookLM Audio</h3>
+        <p style="color: white; font-family: 'Lora', serif; margin-bottom: 1.5rem;">
+            Click the button below to open the NotebookLM notebook containing the audio documentary.
+            You'll need to sign in with your Google account.
         </p>
+        <a href="{PODCAST_DATA['notebooklm_link']}" target="_blank" style="text-decoration: none;">
+            <button style="background: white;
+                          color: #4285f4;
+                          border: none;
+                          border-radius: 6px;
+                          padding: 1rem 2rem;
+                          font-family: 'Cinzel', serif;
+                          font-weight: bold;
+                          font-size: 1.1rem;
+                          cursor: pointer;
+                          transition: all 0.3s ease;">
+                🔓 Open NotebookLM Audio
+            </button>
+        </a>
     </div>
     """, unsafe_allow_html=True)
     
-    # Try to play the audio
-    try:
-        st.audio(direct_audio_url, format="audio/mp3")
-        st.success("✅ Audio loaded successfully from Google Drive!")
-    except Exception as e:
-        st.warning(f"⚠️ Could not load audio directly: {str(e)}")
-        st.info("""
-        **Alternative ways to access the podcast:**
-        
-        1. **Direct Download:** [Click here to download the MP3](https://drive.google.com/uc?export=download&id=1NSqCR-FqZFJOQEpgBFLNzP0yvQqjl4uV)
-        2. **View in Google Drive:** [Open in Google Drive](https://drive.google.com/file/d/1NSqCR-FqZFJOQEpgBFLNzP0yvQqjl4uV/view)
-        3. **Manual Play:** Download the file and play it on your device
+    # Alternative: Provide instructions for downloading/exporting
+    st.markdown("---")
+    st.markdown("### 📥 Alternative: Export from NotebookLM")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        **To embed audio here:**
+        1. In NotebookLM, click the 3-dot menu next to audio
+        2. Select "Export" or "Download"
+        3. Save as MP3 file
+        4. Upload to a public hosting service
+        5. Replace the placeholder below with your link
         """)
     
-    # Also show the direct link as a button
-    st.markdown("---")
-    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown(f"""
-        <a href="https://drive.google.com/uc?export=download&id={google_drive_id}" target="_blank" style="text-decoration: none;">
-            <button style="background: #4285f4;
-                          color: white;
-                          border: none;
-                          border-radius: 6px;
-                          padding: 0.75rem 1.5rem;
-                          font-family: 'Cinzel', serif;
-                          font-weight: bold;
-                          cursor: pointer;
-                          transition: all 0.3s ease;
-                          width: 100%;">
-                ⬇️ Direct Download MP3
-            </button>
-        </a>
-        """, unsafe_allow_html=True)
+        st.markdown("""
+        **Recommended hosting:**
+        • Google Drive (make public)
+        • Dropbox (get shareable link)
+        • SoundCloud (free tier)
+        • Your own web server
+        """)
+    
+    # Placeholder for future audio embedding
+    st.markdown("### 🎵 Audio Player Placeholder")
+    placeholder_audio_url = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    st.audio(placeholder_audio_url, format="audio/mp3")
+    st.caption("*Example placeholder audio. Replace with your NotebookLM podcast once exported and hosted publicly.*")
     
     # Podcast details
     st.markdown("---")
@@ -594,8 +601,7 @@ def display_podcast_section():
     
     st.markdown(f"""
     <div class="audio-note">
-        <strong>Note:</strong> The podcast is hosted on Google Drive. If the audio player doesn't work, 
-        use the download button above to save the file to your device and play it locally.
+        <strong>Note:</strong> {PODCAST_DATA["placeholder_note"]}
     </div>
     """, unsafe_allow_html=True)
 
