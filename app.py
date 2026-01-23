@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import base64
 from datetime import datetime
 
 # ==================== PAGE CONFIGURATION ====================
@@ -114,6 +115,157 @@ st.markdown("""
         background: #f0f7ff;
     }
     
+    .census-detail-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-family: 'Lora', serif;
+        font-size: 0.9rem;
+    }
+    
+    .census-detail-table td {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        vertical-align: top;
+    }
+    
+    .census-detail-table td:first-child {
+        font-weight: bold;
+        background: #f5f5f5;
+        width: 35%;
+    }
+    
+    .census-header {
+        font-family: 'Cinzel', serif;
+        font-size: 1.3rem;
+        color: #1a472a;
+        margin-top: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #c9a66b;
+    }
+    
+    /* Media placeholder styling */
+    .media-placeholder {
+        background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
+        border: 2px dashed #c9a66b;
+        border-radius: 8px;
+        padding: 2rem;
+        margin: 1.5rem 0;
+        text-align: center;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .media-placeholder-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #c9a66b;
+    }
+    
+    .media-placeholder-text {
+        font-family: 'Lora', serif;
+        color: #666;
+        font-size: 1rem;
+        max-width: 400px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .youtube-button {
+        background: #ff0000;
+        color: white !important;
+        border: none;
+        border-radius: 4px;
+        padding: 0.75rem 1.5rem;
+        font-family: 'Cinzel', serif;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .youtube-button:hover {
+        background: #cc0000;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2);
+        text-decoration: none;
+        color: white !important;
+    }
+    
+    /* Print-specific styles */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        .print-full {
+            display: block !important;
+        }
+        
+        body {
+            font-size: 12pt;
+            line-height: 1.5;
+        }
+        
+        .main-header {
+            font-size: 24pt;
+            color: black !important;
+        }
+        
+        .section-header {
+            font-size: 18pt;
+            color: black !important;
+        }
+        
+        .media-placeholder {
+            border: 1px solid #ccc !important;
+            background: #f9f9f9 !important;
+        }
+        
+        .timeline-item {
+            page-break-inside: avoid !important;
+        }
+        
+        .gift-message {
+            border: 1px solid #ccc !important;
+            page-break-inside: avoid !important;
+        }
+        
+        .sidebar-content {
+            display: none !important;
+        }
+        
+        .streamlit-expanderHeader {
+            display: none !important;
+        }
+        
+        .census-detail-table {
+            page-break-inside: avoid !important;
+        }
+    }
+    
+    /* Print button styling */
+    .print-section {
+        background: linear-gradient(135deg, #1a472a 0%, #2d5016 100%);
+        padding: 2rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+        text-align: center;
+    }
+    
+    .print-title {
+        font-family: 'Cinzel', serif;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
     /* Gift message styling */
     .gift-message {
         background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
@@ -124,6 +276,14 @@ st.markdown("""
         font-family: 'Lora', serif;
         font-size: 1.1rem;
         line-height: 1.6;
+    }
+    
+    /* Sidebar styling */
+    .sidebar-section {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
     }
     
     /* Footer */
@@ -148,6 +308,60 @@ st.markdown("""
         white-space: pre;
         overflow-x: auto;
     }
+    
+    /* Quote styling */
+    .quote-box {
+        font-family: 'Lora', serif;
+        font-style: italic;
+        font-size: 1.1rem;
+        color: #555;
+        border-left: 4px solid #c9a76b;
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    
+    /* Timeline styling */
+    .timeline-container {
+        position: relative;
+        padding-left: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+        padding-left: 1.5rem;
+    }
+    
+    .timeline-dot {
+        position: absolute;
+        left: -0.5rem;
+        top: 0.3rem;
+        width: 1rem;
+        height: 1rem;
+        background: #c9a76b;
+        border-radius: 50%;
+    }
+    
+    .timeline-line {
+        position: absolute;
+        left: 0;
+        top: 1.3rem;
+        bottom: -2rem;
+        width: 2px;
+        background: #e0e0e0;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .main-header {
+            font-size: 2rem;
+        }
+        
+        .section-header {
+            font-size: 1.5rem;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -165,6 +379,45 @@ PODCAST_DATA = {
         "What this discovery means for family identity"
     ],
     "placeholder_note": "Podcast is hosted on Google Drive. Use the download button if the audio player doesn't work."
+}
+
+# ==================== MEDIA SEARCH DATA ====================
+MEDIA_SEARCH_DATA = {
+    "ellis_island": {
+        "icon": "🏛️",
+        "title": "Ellis Island - Irish Immigration",
+        "image_search": "Ellis Island Irish immigrants 1900s",
+        "youtube_search": "Irish+immigrants+Ellis+Island+arrival+1900s+documentary",
+        "youtube_title": "▶️ Watch Irish Immigrants at Ellis Island"
+    },
+    "irish_immigrants": {
+        "icon": "🚢",
+        "title": "Irish Immigration to America",
+        "image_search": "Irish immigrants 19th century ship crossing Atlantic",
+        "youtube_search": "Irish+immigration+to+America+1800s+coffin+ships+documentary",
+        "youtube_title": "▶️ Watch Irish Immigration History"
+    },
+    "1940s_family": {
+        "icon": "👨‍👩‍👧‍👦",
+        "title": "Irish-American Family Life, 1940s",
+        "image_search": "Irish American family 1940s home life photo",
+        "youtube_search": "1940s+Irish+american+family+life",
+        "youtube_title": "▶️ Search Irish-American 1940s Family Life"
+    },
+    "bronx_street": {
+        "icon": "🏙️",
+        "title": "Irish Neighborhoods in 1920s Bronx",
+        "image_search": "Irish neighborhood Bronx 1920s street scene",
+        "youtube_search": "Irish+neighborhoods+Bronx+1920s+New+York+immigrants",
+        "youtube_title": "▶️ Watch Irish Bronx Neighborhoods"
+    },
+    "truck_1950s": {
+        "icon": "🚚",
+        "title": "Irish-American Workers in 1950s",
+        "image_search": "Irish American truck drivers 1950s workers",
+        "youtube_search": "1950s+Irish+american+workers+labor+trucking+industry",
+        "youtube_title": "▶️ Search Irish-American 1950s Workers"
+    }
 }
 
 # ==================== CENSUS DATA ====================
@@ -261,11 +514,11 @@ CENSUS_1950_SOURCE = [
 # ==================== UTILITY FUNCTIONS ====================
 def display_podcast_section():
     """Display the podcast/audio section with Google Drive link"""
-    st.markdown("""
+    st.markdown(f"""
     <div class="audio-section">
-        <div class="audio-title">🔊 Finding the Real Edward Burns: A Genealogical Discovery</div>
+        <div class="audio-title">🔊 {PODCAST_DATA["title"]}</div>
         <div class="audio-description">
-            This special podcast episode documents the research journey to uncover the truth about Edward J. Burns, your biological father. Follow the trail of census records, directories, and family stories that led to this remarkable discovery.
+            {PODCAST_DATA["description"]}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -277,7 +530,7 @@ def display_podcast_section():
     direct_audio_url = f"https://drive.google.com/uc?export=download&id={google_drive_id}"
     
     # Try to display audio
-    st.markdown("""
+    st.markdown(f"""
     <div style="background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
                 padding: 2rem;
                 border-radius: 12px;
@@ -332,23 +585,53 @@ def display_podcast_section():
     
     with col1:
         st.markdown("**Recording Details:**")
-        st.markdown("Recorded as part of the Burns Family Story project, this audio presentation walks through the evidence and emotional journey of connecting with your Irish-American heritage.")
+        st.markdown(PODCAST_DATA["recording_details"])
     
     with col2:
         st.markdown("**Key Topics Covered:**")
-        st.markdown("• The initial search for paternal lineage")
-        st.markdown("• Analysis of 1940 and 1950 census records")
-        st.markdown("• Understanding the Irish immigrant experience")
-        st.markdown("• Connecting the dots through NYC directories")
-        st.markdown("• The significance of the 2004 obituary")
-        st.markdown("• What this discovery means for family identity")
+        for topic in PODCAST_DATA["key_topics"]:
+            st.markdown(f"• {topic}")
     
-    st.markdown("""
+    st.markdown(f"""
     <div class="audio-note">
         <strong>Note:</strong> The podcast is hosted on Google Drive. If the audio player doesn't work, 
         use the download button above to save the file to your device and play it locally.
     </div>
     """, unsafe_allow_html=True)
+
+def display_media_search(media_key, caption):
+    """Display search options for images and YouTube videos"""
+    if media_key in MEDIA_SEARCH_DATA:
+        media_info = MEDIA_SEARCH_DATA[media_key]
+        
+        # Create the placeholder container
+        st.markdown(f"""
+        <div class="media-placeholder">
+            <div class="media-placeholder-icon">{media_info['icon']}</div>
+            <h3 style="font-family: 'Cinzel', serif; color: #1a472a; margin-bottom: 0.5rem;">{caption}</h3>
+            <div class="media-placeholder-text">
+                <p><strong>To find related images:</strong></p>
+                <p>Search online for: "{media_info['image_search']}"</p>
+                <p><em>Recommended sources: Library of Congress, National Archives</em></p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Create columns for the button
+        col1, col2, col3 = st.columns([1, 2, 1])
+        
+        with col2:
+            # YouTube Search Button
+            youtube_search_url = f"https://www.youtube.com/results?search_query={media_info['youtube_search']}"
+            st.markdown(f"""
+            <a href="{youtube_search_url}" target="_blank" style="text-decoration: none;">
+                <button class="youtube-button">
+                    {media_info['youtube_title']}
+                </button>
+            </a>
+            """, unsafe_allow_html=True)
+    else:
+        st.info(f"*Media placeholder: {caption}*")
 
 def display_census_full_details(census_year):
     """Display FULL census details with expandable sections"""
@@ -369,7 +652,7 @@ def display_census_full_details(census_year):
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        st.markdown(f'<div class="section-header">{year_label} Census - Edward Burns</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="census-header">{year_label} Census - Edward Burns</div>', unsafe_allow_html=True)
         st.markdown(f"**Address:** {address}")
     
     with col2:
@@ -428,6 +711,21 @@ def display_family_tree():
             └── Catherine Ryan (Staten Island)
     """
     st.markdown(f'<div class="family-tree">{tree_text}</div>', unsafe_allow_html=True)
+
+def create_timeline_item(year, event):
+    """Create a timeline item with custom styling"""
+    st.markdown(f"""
+    <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-line"></div>
+        <div style="font-family: 'Cinzel', serif; font-weight: 700; color: #c9a76b; font-size: 1.5rem; margin-bottom: 0.5rem;">
+            {year}
+        </div>
+        <div style="font-family: 'Lora', serif; font-size: 1.1rem; line-height: 1.5; color: #333;">
+            {event}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 def generate_printable_html():
     """Generate complete HTML for printing/downloading"""
@@ -705,21 +1003,15 @@ def generate_printable_html():
 def create_print_section():
     """Create the print section with working download"""
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #1a472a 0%, #2d5016 100%);
-                padding: 2rem;
-                border-radius: 8px;
-                margin: 2rem 0;
-                text-align: center;">
-        <div style="font-family: 'Cinzel', serif; color: white; font-size: 1.5rem; margin-bottom: 1rem;">
-            📄 Download Complete Presentation
-        </div>
+    <div class="print-section">
+        <div class="print-title">📄 Download Complete Presentation</div>
     </div>
     """, unsafe_allow_html=True)
     
     # Create the HTML content for printing
     html_content = generate_printable_html()
     
-    # Create download button with unique key
+    # Create download button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.download_button(
@@ -729,8 +1021,7 @@ def create_print_section():
             mime="text/html",
             help="Download complete presentation as HTML file for printing",
             use_container_width=True,
-            type="primary",
-            key="download_printable_version"  # Unique key added here
+            type="primary"
         )
     
     st.info("""
@@ -746,49 +1037,47 @@ def create_print_section():
 
 # ==================== PAGE CONTENT FUNCTIONS ====================
 def introduction_page():
-    """Display the introduction page using Streamlit components"""
+    """Display the introduction page"""
     st.markdown('<div class="main-header">The Burns Family Story</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">A Genealogical Discovery for Edward "Eddie" Byrnes</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        # Using Streamlit's container for styling instead of HTML
-        with st.container():
-            st.markdown("""
-            <div style="background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
-                        border-left: 5px solid #c9a66b;
-                        padding: 1.5rem;
-                        border-radius: 8px;
-                        margin: 1.5rem 0;">
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div class="gift-message">
+            <h3 style="color: #1a472a; font-family: 'Cinzel', serif; margin-top: 0;">🎁 A Birthday Gift of Heritage</h3>
+            <p>This interactive presentation represents months of genealogical research into your paternal lineage. 
+            Through census records, directories, and historical documents, we've uncovered the story of your 
+            biological father and your Irish-American heritage.</p>
             
-            st.markdown("### 🎁 A Birthday Gift of Heritage")
-            st.write("This interactive presentation represents months of genealogical research into your paternal lineage. Through census records, directories, and historical documents, we've uncovered the story of your biological father and your Irish-American heritage.")
+            <p><strong>What you'll discover:</strong></p>
+            <ul>
+                <li>Your father's identity: Edward J. Burns (1936-2004)</li>
+                <li>Your Irish immigrant roots on both sides of his family</li>
+                <li>The Burns family journey from Ireland to America</li>
+                <li>Documentary evidence from official records</li>
+                <li>A timeline of key family events</li>
+            </ul>
             
-            st.markdown("**What you'll discover:**")
-            st.markdown("- Your father's identity: Edward J. Burns (1936-2004)")
-            st.markdown("- Your Irish immigrant roots on both sides of his family")
-            st.markdown("- The Burns family journey from Ireland to America")
-            st.markdown("- Documentary evidence from official records")
-            st.markdown("- A timeline of key family events")
-            
-            st.write("*Use the sidebar to navigate through each chapter of this discovery.*")
-            
-            st.markdown("</div>", unsafe_allow_html=True)
+            <p><em>Use the sidebar to navigate through each chapter of this discovery.</em></p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("### 📋 Quick Facts")
-        st.markdown("**Your Father:**")
-        st.markdown("• Edward J. Burns")
-        st.markdown("• Born: Jan 4, 1936")
-        st.markdown("• Died: May 12, 2004")
-        st.markdown("• Married: Virginia Gonzalez (1957)")
+        st.markdown("""
+        **Your Father:**
+        • Edward J. Burns
+        • Born: Jan 4, 1936
+        • Died: May 12, 2004
+        • Married: Virginia Gonzalez (1957)
         
-        st.markdown("**Your Heritage:**")
-        st.markdown("• Irish-American")
-        st.markdown("• New York roots")
-        st.markdown("• Working-class background")
+        **Your Heritage:**
+        • Irish-American
+        • New York roots
+        • Working-class background
+        """)
     
     st.markdown("---")
     
@@ -801,77 +1090,94 @@ def irish_roots_page():
     st.markdown('<div class="main-header">Irish Roots</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">The Burns Family Journey from Ireland</div>', unsafe_allow_html=True)
     
-    # Using Streamlit container instead of HTML
-    with st.container():
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
-                    border-left: 5px solid #c9a66b;
-                    padding: 1.5rem;
-                    border-radius: 8px;
-                    margin: 1.5rem 0;">
-        """, unsafe_allow_html=True)
+    st.markdown("""
+    <div class="gift-message">
+        <h3 style="color: #1a472a; font-family: 'Cinzel', serif; margin-top: 0;">🇮🇪 The Irish Connection</h3>
+        <p>The Burns surname originates from Scotland and Ireland, with strong connections to both countries. 
+        Your Burns ancestors likely came from Ireland during the great waves of Irish immigration 
+        in the late 19th and early 20th centuries.</p>
         
-        st.markdown("### 🇮🇪 The Irish Connection")
-        st.write("The Burns surname originates from Scotland and Ireland, with strong connections to both countries. Your Burns ancestors likely came from Ireland during the great waves of Irish immigration in the late 19th and early 20th centuries.")
-        st.write('The name "Burns" (sometimes spelled "Byrnes" or "O\'Byrne") is an anglicized form of the Gaelic "Ó Broin," meaning "descendant of Bran." The Burns family would have been part of the mass Irish diaspora seeking better opportunities in America.')
-        
-        st.markdown("</div>", unsafe_allow_html=True)
+        <p>The name "Burns" (sometimes spelled "Byrnes" or "O'Byrne") is an anglicized form of the 
+        Gaelic "Ó Broin," meaning "descendant of Bran." The Burns family would have been part of 
+        the mass Irish diaspora seeking better opportunities in America.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Media Search for Irish Immigration
+    display_media_search("irish_immigrants", "Irish Immigration to America")
+    
+    st.markdown("---")
     
     # Irish Immigration Facts
-    st.markdown("---")
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("### 📊 Irish Immigration Facts")
-        st.markdown("**Great Irish Migration (1845-1855):**")
-        st.markdown("• 1.5 million Irish came to America")
-        st.markdown("• Escaping the Potato Famine")
-        st.markdown("• Mostly settled in Northeast cities")
+        st.markdown("""
+        **Great Irish Migration (1845-1855):**
+        • 1.5 million Irish came to America
+        • Escaping the Potato Famine
+        • Mostly settled in Northeast cities
         
-        st.markdown("**Irish in New York:**")
-        st.markdown("• By 1855, 26% of NYC was Irish-born")
-        st.markdown("• Concentrated in Five Points, Hell's Kitchen")
-        st.markdown("• Worked as laborers, domestics, police, firefighters")
+        **Irish in New York:**
+        • By 1855, 26% of NYC was Irish-born
+        • Concentrated in Five Points, Hell's Kitchen
+        • Worked as laborers, domestics, police, firefighters
+        """)
     
     with col2:
         st.markdown("### 🏙️ Irish Neighborhoods")
-        st.markdown("**The Bronx (1940s):**")
-        st.markdown("• Strong Irish communities")
-        st.markdown("• Parish churches as community centers")
-        st.markdown("• Working-class neighborhoods")
-        st.markdown("• Family-oriented culture")
+        st.markdown("""
+        **The Bronx (1940s):**
+        • Strong Irish communities
+        • Parish churches as community centers
+        • Working-class neighborhoods
+        • Family-oriented culture
         
-        st.markdown("**Cultural Legacy:**")
-        st.markdown("• Catholic faith")
-        st.markdown("• Labor movement participation")
-        st.markdown("• Political involvement")
-        st.markdown("• Strong family values")
+        **Cultural Legacy:**
+        • Catholic faith
+        • Labor movement participation
+        • Political involvement
+        • Strong family values
+        """)
+    
+    # Ellis Island Section
+    st.markdown("---")
+    display_media_search("ellis_island", "Ellis Island Arrival")
 
 def journey_to_america_page():
     """Display the journey to America page"""
     st.markdown('<div class="main-header">Journey to America</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">From Irish Shores to American Streets</div>', unsafe_allow_html=True)
     
-    # Quote using Streamlit
     st.markdown("""
-    <div style="font-family: 'Lora', serif; font-style: italic; font-size: 1.1rem; color: #555;
-                border-left: 4px solid #c9a76b; padding-left: 1.5rem; margin: 1.5rem 0;">
-    "They came in search of freedom, opportunity, and a better life for their children. 
-    They brought with them their faith, their resilience, and their dreams."
+    <div class="quote-box">
+        "They came in search of freedom, opportunity, and a better life for their children. 
+        They brought with them their faith, their resilience, and their dreams."
     </div>
     """, unsafe_allow_html=True)
     
     # Timeline of the Journey
     st.markdown("### 📅 The Burns Family Timeline in America")
     
-    # Simple timeline using Streamlit
-    st.markdown("**Late 1800s:** James Burns (your great-grandfather) immigrates from Ireland to the United States, likely arriving at Ellis Island.")
-    st.markdown("**Early 1900s:** The Burns family establishes roots in New York City, part of the large Irish immigrant community.")
-    st.markdown("**1936:** Edward J. Burns (your father) is born in New York, first-generation American.")
-    st.markdown("**1940:** Edward appears in the Bronx census at age 4, living with parents and siblings.")
-    st.markdown("**1950:** Edward appears in Los Angeles census at age 14, indicating family relocation.")
-    st.markdown("**1957:** Edward marries Virginia Gonzalez in New York City.")
-    st.markdown("**1958:** You are born - continuing the Burns family legacy in America.")
+    st.markdown('<div class="timeline-container">', unsafe_allow_html=True)
+    create_timeline_item("Late 1800s", "James Burns (your great-grandfather) immigrates from Ireland to the United States, likely arriving at Ellis Island.")
+    create_timeline_item("Early 1900s", "The Burns family establishes roots in New York City, part of the large Irish immigrant community.")
+    create_timeline_item("1936", "Edward J. Burns (your father) is born in New York, first-generation American.")
+    create_timeline_item("1940", "Edward appears in the Bronx census at age 4, living with parents and siblings.")
+    create_timeline_item("1950", "Edward appears in Los Angeles census at age 14, indicating family relocation.")
+    create_timeline_item("1957", "Edward marries Virginia Gonzalez in New York City.")
+    create_timeline_item("1958", "You are born - continuing the Burns family legacy in America.")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # The Bronx in the 1940s
+    display_media_search("bronx_street", "Irish Neighborhoods in 1920s-1940s Bronx")
+    
+    # Family Life
+    st.markdown("### 👨‍👩‍👧‍👦 Family Life in Mid-Century America")
+    display_media_search("1940s_family", "Irish-American Family Life, 1940s")
 
 def family_timeline_page():
     """Display the family timeline page"""
@@ -885,49 +1191,57 @@ def family_timeline_page():
     
     with col1:
         st.markdown("#### 🏴󠁧󠁢󠁳󠁣󠁴󠁿 **Irish Origins**")
-        st.markdown("**1800s:**")
-        st.markdown("• Burns family lives in Ireland")
-        st.markdown("• Likely farmers or laborers")
-        st.markdown("• Catholic faith")
+        st.markdown("""
+        **1800s:**
+        • Burns family lives in Ireland
+        • Likely farmers or laborers
+        • Catholic faith
         
-        st.markdown("**Late 1800s:**")
-        st.markdown("• Great-grandfather James emigrates")
-        st.markdown("• Arrives at Ellis Island")
-        st.markdown("• Settles in New York area")
+        **Late 1800s:**
+        • Great-grandfather James emigrates
+        • Arrives at Ellis Island
+        • Settles in New York area
+        """)
         
         st.markdown("#### 🇺🇸 **Early American Years**")
-        st.markdown("**1900-1935:**")
-        st.markdown("• Family establishes in NYC")
-        st.markdown("• Working-class occupations")
-        st.markdown("• Builds community in Irish neighborhoods")
-        st.markdown("• Maintains Irish cultural traditions")
+        st.markdown("""
+        **1900-1935:**
+        • Family establishes in NYC
+        • Working-class occupations
+        • Builds community in Irish neighborhoods
+        • Maintains Irish cultural traditions
+        """)
     
     with col2:
         st.markdown("#### 👶 **Edward's Generation**")
-        st.markdown("**1936:**")
-        st.markdown("• Edward J. Burns born")
+        st.markdown("""
+        **1936:**
+        • Edward J. Burns born
         
-        st.markdown("**1940:**")
-        st.markdown("• Age 4 in Bronx census")
-        st.markdown("• Living with parents & 3 siblings")
+        **1940:**
+        • Age 4 in Bronx census
+        • Living with parents & 3 siblings
         
-        st.markdown("**1950:**")
-        st.markdown("• Age 14 in LA census")
-        st.markdown("• Living with guardians & 7 siblings")
+        **1950:**
+        • Age 14 in LA census
+        • Living with guardians & 7 siblings
+        """)
         
         st.markdown("#### 👨‍👩‍👦 **Your Generation**")
-        st.markdown("**1957:**")
-        st.markdown("• Edward marries Virginia")
+        st.markdown("""
+        **1957:**
+        • Edward marries Virginia
         
-        st.markdown("**1958:**")
-        st.markdown("• You are born")
+        **1958:**
+        • You are born
         
-        st.markdown("**2004:**")
-        st.markdown("• Edward passes away")
+        **2004:**
+        • Edward passes away
         
-        st.markdown("**Present:**")
-        st.markdown("• Discovery of heritage")
-        st.markdown("• Connection to living relatives")
+        **Present:**
+        • Discovery of heritage
+        • Connection to living relatives
+        """)
     
     st.markdown("---")
     
@@ -961,20 +1275,24 @@ def evidence_page():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("**1940 Census Significance:**")
-            st.markdown("• Earliest official record of Edward J. Burns")
-            st.markdown("• Shows him at age 4 in the Bronx")
-            st.markdown("• Confirms New York birth")
-            st.markdown("• Shows family unit before separation")
-            st.markdown("• Parents' birthplace listed as Scotland (likely error for Ireland)")
+            st.markdown("""
+            **1940 Census Significance:**
+            • Earliest official record of Edward J. Burns
+            • Shows him at age 4 in the Bronx
+            • Confirms New York birth
+            • Shows family unit before separation
+            • Parents' birthplace listed as Scotland (likely error for Ireland)
+            """)
         
         with col2:
-            st.markdown("**1950 Census Significance:**")
-            st.markdown("• Shows Edward at age 14 in Los Angeles")
-            st.markdown("• Indicates family separation between 1940-1950")
-            st.markdown("• Shows complex family situation during adolescence")
-            st.markdown("• Household includes 8 children total")
-            st.markdown("• Edward not working or seeking work (typical for 14-year-old)")
+            st.markdown("""
+            **1950 Census Significance:**
+            • Shows Edward at age 14 in Los Angeles
+            • Indicates family separation between 1940-1950
+            • Shows complex family situation during adolescence
+            • Household includes 8 children total
+            • Edward not working or seeking work (typical for 14-year-old)
+            """)
     
     with tab2:
         st.markdown("### Vital Records")
@@ -1001,14 +1319,16 @@ def evidence_page():
         """)
         
         st.markdown("#### NYC Directories")
-        st.markdown("**Edward J. Burns**")
-        st.markdown("• 1958: Truck driver, 1075 Tiffany St, Bronx")
-        st.markdown("• 1960: Clerk, 160 Amsterdam Ave, Manhattan")
-        st.markdown("• 1962: Mechanic, 321 S. Oxford St, Brooklyn")
+        st.markdown("""
+        **Edward J. Burns**
+        • 1958: Truck driver, 1075 Tiffany St, Bronx  
+        • 1960: Clerk, 160 Amsterdam Ave, Manhattan  
+        • 1962: Mechanic, 321 S. Oxford St, Brooklyn
         
-        st.markdown("**John Burns (Brother)**")
-        st.markdown("• 1958-1968: Consistently at 1075 Tiffany St, Bronx")
-        st.markdown("• Occupations: Clerk, Driver")
+        **John Burns (Brother)**
+        • 1958-1968: Consistently at 1075 Tiffany St, Bronx  
+        • Occupations: Clerk, Driver
+        """)
     
     with tab3:
         st.markdown("## 🔊 The Discovery Podcast")
@@ -1023,117 +1343,120 @@ def evidence_page():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("**The Research Journey:**")
-            st.markdown("• Months of genealogical investigation")
-            st.markdown("• Analysis of historical documents")
-            st.markdown("• Interviews with family members")
-            st.markdown("• Verification through multiple sources")
+            st.markdown("""
+            **The Research Journey:**
+            • Months of genealogical investigation
+            • Analysis of historical documents
+            • Interviews with family members
+            • Verification through multiple sources
+            """)
         
         with col2:
-            st.markdown("**Key Breakthroughs:**")
-            st.markdown("• Connecting census records across decades")
-            st.markdown("• Understanding Irish immigrant patterns")
-            st.markdown("• Tracing the Burns family movements")
-            st.markdown("• Corroborating evidence from multiple sources")
-        
-        # Gift message using Streamlit
-        with st.container():
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
-                        border-left: 5px solid #c9a66b;
-                        padding: 1.5rem;
-                        border-radius: 8px;
-                        margin: 1.5rem 0;">
-            """, unsafe_allow_html=True)
-            
-            st.markdown("**Listener's Note:** This audio presentation complements the written evidence in this presentation. Hearing the story narrated adds emotional depth to the factual discovery of your biological father and Irish-American heritage.")
-            
-            st.markdown("</div>", unsafe_allow_html=True)
+            **Key Breakthroughs:**
+            • Connecting census records across decades
+            • Understanding Irish immigrant patterns
+            • Tracing the Burns family movements
+            • Corroborating evidence from multiple sources
+            """)
+        
+        st.markdown('<div class="gift-message">', unsafe_allow_html=True)
+        st.markdown("""
+        **Listener's Note:** This audio presentation complements the written evidence 
+        in this presentation. Hearing the story narrated adds emotional depth to 
+        the factual discovery of your biological father and Irish-American heritage.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
     
     with tab4:
         st.markdown("## 📄 Complete Printable Report")
         create_print_section()
         
         st.markdown("### 🔍 How to Verify Absolutely")
-        st.markdown("1. **Order Eddie's birth certificate** (NYC Vital Records)")
-        st.markdown("   - Will list father's name, age, residence")
-        st.markdown("")
-        st.markdown("2. **Order marriage certificate** (Edward & Virginia, 1957)")
-        st.markdown("   - Will list Edward's parents' names")
-        st.markdown("")
-        st.markdown("3. **DNA testing** (AncestryDNA, 23andMe)")
-        st.markdown("   - Match with Burns relatives' descendants")
-        st.markdown("")
-        st.markdown("4. **Contact Greco Funeral Home** (Lyndhurst, NJ)")
-        st.markdown("   - Ask who provided obituary details")
+        st.markdown("""
+        1. **Order Eddie's birth certificate** (NYC Vital Records)  
+           - Will list father's name, age, residence
         
-        # Gift message using Streamlit
-        with st.container():
-            st.markdown("""
-            <div style="background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
-                        border-left: 5px solid #c9a66b;
-                        padding: 1.5rem;
-                        border-radius: 8px;
-                        margin: 1.5rem 0;">
-            """, unsafe_allow_html=True)
-            
-            st.markdown("**Note:** This presentation provides strong circumstantial evidence. The steps above would provide legal and biological confirmation.")
-            
-            st.markdown("</div>", unsafe_allow_html=True)
+        2. **Order marriage certificate** (Edward & Virginia, 1957)  
+           - Will list Edward's parents' names
+        
+        3. **DNA testing** (AncestryDNA, 23andMe)  
+           - Match with Burns relatives' descendants
+        
+        4. **Contact Greco Funeral Home** (Lyndhurst, NJ)  
+           - Ask who provided obituary details
+        """)
+        
+        st.markdown('<div class="gift-message">', unsafe_allow_html=True)
+        st.markdown("""
+        **Note:** This presentation provides strong circumstantial evidence. 
+        The steps above would provide legal and biological confirmation.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 def birthday_message_page():
     """Display the birthday message page"""
     st.markdown('<div class="main-header">Happy Birthday, Eddie!</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">A Gift of Heritage and Identity</div>', unsafe_allow_html=True)
     
-    # Birthday graphic
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("<h1 style='text-align: center;'>🎂</h1>", unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align: center; font-family: Cinzel, serif; color: #1a472a;'>Happy Birthday!</h2>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="text-align: center; margin: 3rem 0;">
+        <div style="font-size: 6rem; margin-bottom: 2rem;">🎂</div>
+        <h2 style="font-family: 'Cinzel', serif; color: #1a472a;">Happy Birthday!</h2>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        # Birthday message using Streamlit
-        with st.container():
-            st.markdown("""
-            <div style="background: linear-gradient(135deg, #f9f3e9 0%, #e8dfc8 100%);
-                        border-left: 5px solid #c9a66b;
-                        padding: 1.5rem;
-                        border-radius: 8px;
-                        margin: 1.5rem 0;">
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div class="gift-message">
+            <h3 style="color: #1a472a; font-family: 'Cinzel', serif; margin-top: 0;">Dear Eddie,</h3>
             
-            st.markdown("### Dear Eddie,")
-            st.write("On your birthday, I wanted to give you something more meaningful than a traditional gift. This presentation represents the discovery of your biological father and your Irish-American heritage.")
-            st.write("For years, there were questions about your paternal lineage. Through careful research and examination of historical records, we can now say with confidence:")
-            st.markdown("**Your father was Edward J. Burns (1936-2004), an Irish-American New Yorker.**")
-            st.write("This discovery connects you to a rich heritage of Irish immigrants who came to America seeking better lives, who worked hard, raised families, and contributed to this country.")
-            st.write("You come from resilient people. People who crossed an ocean for opportunity. People who built communities in a new land while maintaining their cultural identity.")
-            st.write("This is your story. This is your heritage. And now, it's yours to know, to claim, and to pass on to future generations.")
-            st.write("Happy Birthday, with love and admiration for the man you are and the heritage you carry.")
-            st.markdown("<p style='text-align: right; font-style: italic; margin-top: 2rem;'>With love,<br>Your family</p>", unsafe_allow_html=True)
+            <p>On your birthday, I wanted to give you something more meaningful than a traditional gift. 
+            This presentation represents the discovery of your biological father and your Irish-American heritage.</p>
             
-            st.markdown("</div>", unsafe_allow_html=True)
+            <p>For years, there were questions about your paternal lineage. Through careful research 
+            and examination of historical records, we can now say with confidence:</p>
+            
+            <p><strong>Your father was Edward J. Burns (1936-2004), an Irish-American New Yorker.</strong></p>
+            
+            <p>This discovery connects you to a rich heritage of Irish immigrants who came to America 
+            seeking better lives, who worked hard, raised families, and contributed to this country.</p>
+            
+            <p>You come from resilient people. People who crossed an ocean for opportunity. 
+            People who built communities in a new land while maintaining their cultural identity.</p>
+            
+            <p>This is your story. This is your heritage. And now, it's yours to know, to claim, 
+            and to pass on to future generations.</p>
+            
+            <p>Happy Birthday, with love and admiration for the man you are and the heritage you carry.</p>
+            
+            <p style="text-align: right; font-style: italic; margin-top: 2rem;">With love,<br>Your family</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("### 🎁 Your Birthday Gift Includes:")
-        st.markdown("• **Identity:** Knowing your biological father")
-        st.markdown("• **Heritage:** Your Irish-American roots")
-        st.markdown("• **Family:** Connection to living relatives")
-        st.markdown("• **History:** Your family's American journey")
-        st.markdown("• **Documents:** Official records as proof")
-        st.markdown("• **Story:** The narrative of your origins")
+        st.markdown("""
+        • **Identity:** Knowing your biological father
+        • **Heritage:** Your Irish-American roots
+        • **Family:** Connection to living relatives
+        • **History:** Your family's American journey
+        • **Documents:** Official records as proof
+        • **Story:** The narrative of your origins
+        """)
         
         st.markdown("---")
         
         st.markdown("### 📞 Next Steps")
-        st.markdown("**If you want to explore further:**")
-        st.markdown("1. DNA test (Ancestry/23andMe)")
-        st.markdown("2. Contact Burns relatives")
-        st.markdown("3. Visit Irish cultural centers")
-        st.markdown("4. Research Burns family history")
+        st.markdown("""
+        **If you want to explore further:**
+        1. DNA test (Ancestry/23andMe)
+        2. Contact Burns relatives
+        3. Visit Irish cultural centers
+        4. Research Burns family history
+        """)
     
     st.markdown("---")
     
@@ -1143,7 +1466,7 @@ def birthday_message_page():
 
 # ==================== SIDEBAR ====================
 with st.sidebar:
-    st.markdown('<div style="font-family: Cinzel, serif; font-size: 2rem; color: #1a472a; text-align: center; margin-bottom: 1rem;">The Burns Family</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header" style="font-size: 2rem;">The Burns Family</div>', unsafe_allow_html=True)
     
     # Navigation
     st.markdown("### 📖 Navigation")
@@ -1151,56 +1474,65 @@ with st.sidebar:
         "Choose a chapter:",
         ["🎁 Introduction", "🇮🇪 Irish Roots", "🛳️ Journey to America", 
          "📅 Family Timeline", "🔍 Evidence", "💝 Birthday Message"],
-        label_visibility="collapsed",
-        key="navigation_radio"  # Added unique key
+        label_visibility="collapsed"
     )
     
     st.markdown("---")
     
     # New Podcast quick link in sidebar
     st.markdown("### 🔊 Podcast")
-    st.markdown("**Finding the Real Edward Burns**")
-    st.markdown("Listen to the audio documentary of this genealogical discovery.")
-    st.markdown("*Available in the Evidence section*")
+    st.markdown("""
+    **Finding the Real Edward Burns**
+    
+    Listen to the audio documentary of this genealogical discovery.
+    
+    *Available in the Evidence section*
+    """)
     
     st.markdown("---")
     
     # Print Section
     st.markdown("### 🖨️ Print Options")
-    if st.button("📄 Generate Printable Version", use_container_width=True, type="primary", key="print_button"):
+    if st.button("📄 Generate Printable Version", use_container_width=True, type="primary"):
         st.session_state.show_print = True
     
     st.markdown("---")
     
-    # Census Quick Facts - FIXED: Removed key parameter from expanders
+    # Census Quick Facts
     st.markdown("### 📋 Census Quick Facts")
     
     with st.expander("1940 Census"):
-        st.markdown("**Edward Burns, Age 4**")
-        st.markdown("• Address: 627 E-135 St, Bronx")
-        st.markdown("• Parents: James & Sars Burns")
-        st.markdown("• Birthplace: New York")
-        st.markdown("• Father's Birthplace: Scotland")
-        st.markdown("• Mother's Birthplace: Scotland")
+        st.markdown("""
+        **Edward Burns, Age 4**
+        • Address: 627 E-135 St, Bronx
+        • Parents: James & Sars Burns
+        • Birthplace: New York
+        • Father's Birthplace: Scotland
+        • Mother's Birthplace: Scotland
+        """)
     
     with st.expander("1950 Census"):
-        st.markdown("**Edward Burns, Age 14**")
-        st.markdown("• Address: 4547 Caledonia Way, LA")
-        st.markdown("• Guardians: James & Sarah Burns")
-        st.markdown("• Birthplace: New York")
-        st.markdown("• Household: 10 people total")
-        st.markdown("• Not working/Not seeking work")
+        st.markdown("""
+        **Edward Burns, Age 14**
+        • Address: 4547 Caledonia Way, LA
+        • Guardians: James & Sarah Burns
+        • Birthplace: New York
+        • Household: 10 people total
+        • Not working/Not seeking work
+        """)
     
     st.markdown("---")
     
     # Key Dates
     st.markdown("### 📅 Key Dates")
-    st.markdown("**Edward J. Burns**")
-    st.markdown("• Born: Jan 4, 1936")
-    st.markdown("• Died: May 12, 2004")
-    st.markdown("")
-    st.markdown("**Eddie Byrnes**")
-    st.markdown("• Born: Jan 27, 1958")
+    st.markdown("""
+    **Edward J. Burns**  
+    • Born: Jan 4, 1936  
+    • Died: May 12, 2004
+    
+    **Eddie Byrnes**  
+    • Born: Jan 27, 1958
+    """)
     
     st.markdown("---")
     st.markdown("*A genealogical gift for Eddie*")
@@ -1220,13 +1552,12 @@ elif page == "💝 Birthday Message":
     birthday_message_page()
 
 # ==================== FOOTER ====================
-st.markdown("---")
+st.markdown('<div class="footer">', unsafe_allow_html=True)
 st.markdown("""
-<div style="text-align: center; color: #666; font-family: 'Lora', serif; font-size: 0.9rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee;">
-<strong>Sources:</strong> 1940 & 1950 U.S. Census • NYC Marriage Index • Social Security Death Index • Newark Star-Ledger Obituary<br>
-<strong>Presented as a birthday gift</strong> • Created with Streamlit
-</div>
-""", unsafe_allow_html=True)
+**Sources:** 1940 & 1950 U.S. Census • NYC Marriage Index • Social Security Death Index • Newark Star-Ledger Obituary  
+**Presented as a birthday gift** • Created with Streamlit
+""")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ==================== SESSION STATE INITIALIZATION ====================
 if 'initialized' not in st.session_state:
